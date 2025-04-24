@@ -331,7 +331,7 @@ const portfolio = ref({
       relevant_courses: [
         'Machine Learning & Data Mining',
         'Bayesian Statistics',
-        'Computer Networksl',
+        'Computer Networks',
         'Operating Systems',
         'Analysis of Algorithms',
         'Cloud Application Development',
