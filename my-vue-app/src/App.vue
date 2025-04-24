@@ -272,16 +272,13 @@
               ></textarea>
             </div>
             <div class="flex justify-center">
-            <button class="w-1/2 bg-black h-[50px] my-3 flex items-center 
-            justify-center rounded-xl cursor-pointer relative 
-            overflow-hidden transition-all 
-            duration-500 ease-in-out shadow-md hover:scale-105 
-            hover:shadow-lg before:absolute before:top-0 before:-left-full 
-            before:w-full before:h-full before:bg-gradient-to-r before:from-[#009b49]
-             before:to-[rgb(105,184,141)] before:transition-all before:duration-500 
-             before:ease-in-out before:z-[-1] before:rounded-xl hover:before:left-0 text-[#fff]">
+             
+             <button class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+              <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md text-gray-900 group-hover:text-white group-hover:bg-transparent group-hover:dark:bg-transparent">
               Send Message
-            </button>
+              </span>
+           </button>
+
             </div>
             <p v-if="formSuccess" class="text-green-600 text-center">
               Your message has been sent successfully!
@@ -302,6 +299,7 @@ import {
   LinkedinIcon,
   InstagramIcon
 } from 'lucide-vue-next'
+import emailjs from '@emailjs/browser'
 import avatarImage from './assets/images/avatar.jpg'
 import damfitImage from './assets/images/logo.png'
 import premierLeagueImage from './assets/images/Premier-League-Logo.png'
@@ -333,7 +331,7 @@ const portfolio = ref({
       relevant_courses: [
         'Machine Learning & Data Mining',
         'Bayesian Statistics',
-        'Computer Network',
+        'Computer Networksl',
         'Operating Systems',
         'Analysis of Algorithms',
         'Cloud Application Development',
@@ -498,23 +496,22 @@ const submitForm = async () => {
   formSubmitting.value = true
   
   try {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    let serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    let templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    let publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+    // Use EmailJS to send email
+    const result = await emailjs.send(
+      serviceId, // Replace with your EmailJS service ID
+      templateId, // Replace with your EmailJS template ID
+      {
+        from_name: contactForm.value.name,
+        from_email: contactForm.value.email,
+        message: contactForm.value.message,
+        to_name: portfolio.value.name,
       },
-      body: JSON.stringify({
-        name: contactForm.value.name,
-        email: contactForm.value.email,
-        message: contactForm.value.message
-      }),
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
-    }
+      publicKey // Replace with your EmailJS public key
+    );
     
     // Reset form and show success message
     contactForm.value = {
@@ -537,6 +534,9 @@ const submitForm = async () => {
 
 // Lifecycle hooks
 onMounted(() => {
+  // Initialize EmailJS
+  emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+  
   // Add scroll event listener
   window.addEventListener('scroll', handleScroll)
 

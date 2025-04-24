@@ -7,4 +7,14 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
+  // Add server proxy for local development API requests
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })
